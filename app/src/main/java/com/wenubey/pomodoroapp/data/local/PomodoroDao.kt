@@ -1,9 +1,6 @@
 package com.wenubey.pomodoroapp.data.local
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
+import androidx.room.*
 import com.wenubey.pomodoroapp.model.Pomodoro
 
 @Dao
@@ -15,6 +12,7 @@ interface PomodoroDao {
     @Delete
     suspend fun delete(pomodoro: Pomodoro)
 
-
+    @Query("SELECT * FROM pomodoro_table")
+    suspend fun getAll(): List<Pomodoro>
 
 }
