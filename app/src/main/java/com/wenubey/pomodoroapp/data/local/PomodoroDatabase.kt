@@ -8,8 +8,8 @@ import com.wenubey.pomodoroapp.model.Pomodoro
 @Database(
     entities = [Pomodoro::class],
     version = 1,
-    exportSchema = false
 )
+@TypeConverters(PomodoroTypeConverter::class)
 abstract class PomodoroDatabase: RoomDatabase() {
     abstract fun pomodoroDao(): PomodoroDao
 }

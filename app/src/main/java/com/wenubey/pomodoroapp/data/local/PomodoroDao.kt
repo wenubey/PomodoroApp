@@ -9,10 +9,10 @@ interface PomodoroDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAndUpdate(pomodoro: Pomodoro)
 
-    @Delete
-    suspend fun delete(pomodoro: Pomodoro)
-
     @Query("SELECT * FROM pomodoro_table")
     suspend fun getAll(): List<Pomodoro>
+
+    @Query("DELETE FROM pomodoro_table")
+    suspend fun deleteAll()
 
 }
