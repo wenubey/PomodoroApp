@@ -56,7 +56,6 @@ class StatisticsFragment : Fragment() {
 
     private fun todayButtonClickListener() {
         binding.todayBtn.setOnClickListener {
-            viewModel.addDummyPomodoro()
             viewModel.addBarEntriesToday()
         }
         binding.thisWeekBtn.setOnClickListener {
