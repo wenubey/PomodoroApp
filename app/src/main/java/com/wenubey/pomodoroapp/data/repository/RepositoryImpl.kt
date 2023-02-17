@@ -4,12 +4,15 @@ import com.wenubey.pomodoroapp.data.local.PomodoroDao
 import com.wenubey.pomodoroapp.model.Pomodoro
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.SimpleTimeZone
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(
     private val pomodoroDao: PomodoroDao
-): LocalRepository {
+) : LocalRepository {
     override suspend fun insertAndUpdate(pomodoro: Pomodoro) {
         withContext(Dispatchers.IO) {
             pomodoroDao.insertAndUpdate(pomodoro)
@@ -22,50 +25,44 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAll(): List<Pomodoro> =
-        withContext(Dispatchers.IO) {
-            pomodoroDao.getAll()
-        }
+    override suspend fun getAll(): List<Pomodoro> = withContext(Dispatchers.IO) {
+        pomodoroDao.getAll()
+    }
 
-    override suspend fun getTodayPomodoro(): List<Pomodoro> =
+
+    override suspend fun getTotalToday(): Float =
         withContext(Dispatchers.IO) {
             pomodoroDao.getAll().filter { pomodoro ->
                 val currentDate = pomodoro.createdAt
                 currentDate.dayOfYear == LocalDateTime.now().dayOfYear
-            }
+            }.sumOf {
+                it.workTime
+            } / 1000f
         }
 
-    override suspend fun getThisWeekPomodoro(): List<Pomodoro> {
-        val currentWeekPomodoro = mutableListOf<Pomodoro>()
+    override suspend fun getThisWeekPomodoro(): List<Pomodoro> =
         withContext(Dispatchers.IO) {
-            val list: List<Pomodoro> = pomodoroDao.getAll()
             val currentDay = LocalDateTime.now()
             val shiftLeft = currentDay.dayOfWeek.value - 1
             val shiftRight = 7 - currentDay.dayOfWeek.value
             val endOfWeek = LocalDateTime.now().plusDays(shiftRight.toLong())
             val startOfWeek = LocalDateTime.now().minusDays(shiftLeft.toLong())
-
-            list.forEach {
-                if(startOfWeek <= it.createdAt && it.createdAt <= endOfWeek){
-                    currentWeekPomodoro.add(it)
-                    println("CURRENT WEEK ITEMS: ${it.task_name}")
-                }
-            }
+            pomodoroDao.getBetweenDate(startOfWeek.toString(), endOfWeek.toString())
         }
-        return currentWeekPomodoro
-    }
 
-    override suspend fun getThisYearPomodoro(): List<Pomodoro> {
-        val currentYearPomodoro = mutableListOf<Pomodoro>()
+    override suspend fun getThisMonthPomodoro(): List<Pomodoro> =
         withContext(Dispatchers.IO) {
-            val list: List<Pomodoro> = pomodoroDao.getAll()
-            val currentDate = LocalDateTime.now()
-            list.forEach {
-                if (currentDate.year == it.createdAt.year) {
-                    currentYearPomodoro.add(it)
-                }
+            pomodoroDao.getAll().filter {
+                it.createdAt.month == LocalDateTime.now().month && it.createdAt.year == LocalDateTime.now().year
             }
         }
-        return currentYearPomodoro
-    }
+
+    override suspend fun getThisYearPomodoro(): List<Pomodoro> =
+        withContext(Dispatchers.IO) {
+            pomodoroDao.getAll().filter {
+                it.createdAt.year == LocalDateTime.now().year
+            }
+        }
+
+
 }

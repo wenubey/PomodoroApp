@@ -20,4 +20,5 @@ class PomodoroTypeConverter {
     fun toDateString(date: LocalDateTime?): String? {
         return date?.toString()
     }
+
 }

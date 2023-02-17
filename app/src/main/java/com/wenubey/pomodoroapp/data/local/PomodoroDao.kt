@@ -15,4 +15,7 @@ interface PomodoroDao {
     @Query("DELETE FROM pomodoro_table")
     suspend fun deleteAll()
 
+    @Query("SELECT * FROM pomodoro_table WHERE CREATED_AT BETWEEN :start AND :end ORDER BY CREATED_AT")
+    suspend fun getBetweenDate(start: String, end: String): List<Pomodoro>
+
 }

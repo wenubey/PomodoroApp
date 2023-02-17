@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class StatisticViewModel @Inject constructor(
@@ -24,16 +25,11 @@ class StatisticViewModel @Inject constructor(
     private var barEntries: ArrayList<BarEntry> = arrayListOf()
     private var labels: ArrayList<String> = arrayListOf()
 
-    private var _pomodoroListLiveData = MutableLiveData<List<Pomodoro>>()
-    val pomodoroListLiveData: LiveData<List<Pomodoro>> get() = _pomodoroListLiveData
-
     private var _pomodoroBarEntriesLiveData = MutableLiveData<List<BarEntry>>()
-
     private var _pomodoroLabelsLiveData = MutableLiveData<List<String>>()
+    private var _pomodoroChartData = MediatorLiveData<Pair<List<BarEntry>, List<String>>>()
+    val pomodoroChartData: MediatorLiveData<Pair<List<BarEntry>, List<String>>> get() = _pomodoroChartData
 
-    val pomodoroChartData = MediatorLiveData<Pair<List<BarEntry>, List<String>>>()
-
-    val pomodoroData = MutableLiveData<Pair<List<BarEntry>, List<String>>>()
 
     init {
         pomodoroChartData.addSource(_pomodoroBarEntriesLiveData) { value ->
@@ -43,6 +39,7 @@ class StatisticViewModel @Inject constructor(
             pomodoroChartData.value = Pair(barEntries, value)
         }
     }
+
     fun deleteAllPomodoro() {
         try {
             viewModelScope.launch(Dispatchers.IO) {
@@ -57,64 +54,89 @@ class StatisticViewModel @Inject constructor(
         try {
             viewModelScope.launch(Dispatchers.Main) {
                 clearData()
-                pomodoroList = repository.getTodayPomodoro().toMutableList()
-                pomodoroList.forEachIndexed { index, pomodoro ->
-                    barEntries.add(
-                        BarEntry(
-                            index.toFloat(),
-                            pomodoro.workTime.toFloat()
-                        )
+                barEntries.add(
+                    BarEntry(
+                        0f,
+                        repository.getTotalToday()
                     )
-                    labels.add(pomodoro.createdAt.format(DateTimeFormatter.ofPattern("MM/dd")))
-                }
-                pomodoroChartData.postValue(Pair(barEntries, labels))
-                pomodoroData.postValue(Pair(barEntries, labels))
+                )
+                labels.add(LocalDateTime.now().format(DateTimeFormatter.ofPattern("MM/dd")))
+                _pomodoroChartData.postValue(Pair(barEntries, labels))
             }
         } catch (e: Exception) {
             Log.d(Constants.TAG, "addBarEntriesToday: ${e.message}")
         }
     }
+
 
     fun addBarEntriesThisWeek() {
         try {
             viewModelScope.launch(Dispatchers.Main) {
                 clearData()
                 pomodoroList = repository.getThisWeekPomodoro().toMutableList()
+                pomodoroList.sortBy {
+                    it.createdAt.dayOfYear
+                }
                 pomodoroList.forEachIndexed { index, pomodoro ->
                     barEntries.add(
                         BarEntry(
                             index.toFloat(),
-                            pomodoro.workTime.toFloat()
+                            pomodoro.workTime / 1000f
                         )
                     )
                     labels.add(pomodoro.createdAt.format(DateTimeFormatter.ofPattern("MM/dd")))
                 }
-                pomodoroChartData.postValue(Pair(barEntries, labels))
+                _pomodoroChartData.postValue(Pair(barEntries, labels))
 
             }
         } catch (e: Exception) {
             Log.d(Constants.TAG, "addBarEntriesToday: ${e.message}")
         }
     }
+
+    fun addBarEntriesThisMonth() {
+        try {
+            viewModelScope.launch(Dispatchers.Main) {
+                clearData()
+                pomodoroList = repository.getThisMonthPomodoro().toMutableList()
+                pomodoroList.forEachIndexed { index, pomodoro ->
+                    barEntries.add(
+                        BarEntry(
+                            index.toFloat(),
+                            pomodoro.workTime.toFloat() / 1000f
+                        )
+                    )
+                    labels.add(pomodoro.createdAt.format(DateTimeFormatter.ofPattern("MM/dd")))
+                }
+            }
+        } catch (e: Exception) {
+            Log.d(Constants.TAG, "addBarEntriesThisMonth: ${e.message}")
+        }
+    }
+
     fun addBarEntriesThisYear() {
         try {
             viewModelScope.launch(Dispatchers.Main) {
                 clearData()
                 pomodoroList = repository.getThisYearPomodoro().toMutableList()
+                pomodoroList.sortBy {
+                    it.createdAt.dayOfYear
+                }
                 pomodoroList.forEachIndexed { index, pomodoro ->
                     barEntries.add(
                         BarEntry(
                             index.toFloat(),
-                            pomodoro.workTime.toFloat()
+                            pomodoro.workTime.toFloat() / 1000f
                         )
                     )
                     labels.add(pomodoro.createdAt.format(DateTimeFormatter.ofPattern("MM/dd")))
                 }
-                pomodoroChartData.postValue(Pair(barEntries, labels))
+                _pomodoroChartData.postValue(Pair(barEntries, labels))
+
 
             }
         } catch (e: Exception) {
-            Log.d(Constants.TAG, "addBarEntriesToday: ${e.message}")
+            Log.d(Constants.TAG, "addBarEntriesThisYear: ${e.message}")
         }
     }
 
@@ -123,6 +145,7 @@ class StatisticViewModel @Inject constructor(
         barEntries.clear()
         labels.clear()
     }
+
     fun addDummyPomodoro() {
         try {
             viewModelScope.launch(Dispatchers.IO) {
@@ -150,14 +173,14 @@ class StatisticViewModel @Inject constructor(
                 repository.insertAndUpdate(
                     Pomodoro(
                         task_name = "Read Newspaper",
-                        createdAt = LocalDateTime.now().minusDays(1),
+                        createdAt = LocalDateTime.now().minusMonths(1),
                         workTime = 2500
                     )
                 )
                 repository.insertAndUpdate(
                     Pomodoro(
                         task_name = "Read Newspaper",
-                        createdAt = LocalDateTime.now().minusDays(2),
+                        createdAt = LocalDateTime.now().plusYears(2),
                         workTime = 2500
                     )
                 )

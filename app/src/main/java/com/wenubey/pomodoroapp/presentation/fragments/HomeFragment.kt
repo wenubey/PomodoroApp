@@ -1,23 +1,16 @@
 package com.wenubey.pomodoroapp.presentation.fragments
 
-
-import android.content.Context
-import android.content.Context.VIBRATOR_MANAGER_SERVICE
-import android.content.Context.VIBRATOR_SERVICE
-import android.os.Build
 import android.os.Bundle
-import android.os.Vibrator
-import android.os.VibratorManager
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.wenubey.pomodoroapp.R
 import com.wenubey.pomodoroapp.databinding.FragmentHomeBinding
 import com.wenubey.pomodoroapp.model.Pomodoro
 import com.wenubey.pomodoroapp.presentation.viewmodel.HomeViewModel
@@ -35,14 +28,15 @@ class HomeFragment : Fragment() {
 
     private val viewModel: HomeViewModel by viewModels()
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
+
         return binding.root
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,11 +49,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun goToStatisticsFragmentListener() {
-        binding.buttonStats.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToStatisticsFragment()
-            findNavController().navigate(action)
-
-        }
+//        binding.buttonStats.setOnClickListener {
+//            val action = HomeFragmentDirections.actionHomeFragmentToStatisticsFragment()
+//            findNavController().navigate(action)
+//        }
     }
 
     private fun editTextNullCheck(): Boolean {
@@ -77,10 +70,10 @@ class HomeFragment : Fragment() {
             viewModel.workTimerFinished.observe(viewLifecycleOwner) {
                 lifecycleScope.launch {
                     if (it == true) {
-                        binding.timerTextWorkBreak.text = "BREAK"
-                        binding.pomodoroStartStopButton.text = "START"
+                        binding.timerTextWorkBreak.text = getString(R.string.break_string)
+                        binding.pomodoroStartStopButton.text = getString(R.string.start_string)
                         delay(3000L)
-                        viewModel.startTimerForWork(Constants.BREAK_TIME)
+                        viewModel.startTimerForWork(Constants.BREAK_TIME.toLong())
                     }
                 }
 
@@ -90,25 +83,25 @@ class HomeFragment : Fragment() {
                     if (editTextNullCheck()) {
                         return@setOnClickListener
                     } else {
-                        viewModel.startTimerForWork(Constants.WORK_TIME)
+                        viewModel.startTimerForWork(Constants.WORK_TIME.toLong())
                         viewModel.pomodoroTextLiveData.observe(viewLifecycleOwner) {
                             binding.timerText.text = it
                         }
-                        binding.timerTextWorkBreak.text = "WORK"
-                        binding.pomodoroStartStopButton.text = "STOP"
+                        binding.timerTextWorkBreak.text = getString(R.string.work_string)
+                        binding.pomodoroStartStopButton.text = getString(R.string.stop_string)
                     }
 
                 }
                 "STOP" -> {
                     viewModel.stopCountDownTimer()
-                    binding.pomodoroStartStopButton.text = "RESUME"
+                    binding.pomodoroStartStopButton.text = getString(R.string.resume_string)
                 }
                 "RESUME" -> {
                     if (editTextNullCheck()) {
                         return@setOnClickListener
                     } else {
                         viewModel.resumeCountDownTimer()
-                        binding.pomodoroStartStopButton.text = "STOP"
+                        binding.pomodoroStartStopButton.text = getString(R.string.stop_string)
                     }
                 }
             }
@@ -120,9 +113,10 @@ class HomeFragment : Fragment() {
         binding.pomodoroResetButton.setOnClickListener {
             editTextNullCheck()
             viewModel.resetCountDownTimer()
-            binding.pomodoroStartStopButton.text = "START"
-            binding.timerTextWorkBreak.text = "WORK"
-            binding.timerText.text = "00:25:00"
+            binding.pomodoroStartStopButton.text = getString(R.string.start_string)
+            binding.timerTextWorkBreak.text = getString(R.string.work_string)
+            binding.timerText.text = getString(R.string.initial_value)
+
         }
     }
 
@@ -142,6 +136,5 @@ class HomeFragment : Fragment() {
             }
         }
     }
-
 
 }

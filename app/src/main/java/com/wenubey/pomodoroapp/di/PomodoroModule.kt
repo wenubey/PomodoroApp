@@ -22,7 +22,7 @@ object PomodoroModule {
         @ApplicationContext context: Context
     ): PomodoroDatabase =
         Room.databaseBuilder(context, PomodoroDatabase::class.java, Constants.DB_NAME)
-            .build()
+            .allowMainThreadQueries().fallbackToDestructiveMigration().build()
 
     @Singleton
     @Provides

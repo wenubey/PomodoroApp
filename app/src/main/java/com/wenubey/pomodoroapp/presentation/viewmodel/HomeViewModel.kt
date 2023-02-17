@@ -117,5 +117,48 @@ class HomeViewModel @Inject constructor(
     }
 
 
+    fun addDummyPomodoro() {
+        try {
+            viewModelScope.launch(Dispatchers.IO) {
+                repository.insertAndUpdate(
+                    Pomodoro(
+                        task_name = "Read Book",
+                        createdAt = LocalDateTime.now().plusDays(1),
+                        workTime = 1000
+                    )
+                )
+                repository.insertAndUpdate(
+                    Pomodoro(
+                        task_name = "Read Comic",
+                        createdAt = LocalDateTime.now().plusMonths(1),
+                        workTime = 2000
+                    )
+                )
+                repository.insertAndUpdate(
+                    Pomodoro(
+                        task_name = "Read Newspaper",
+                        createdAt = LocalDateTime.now(),
+                        workTime = 2500
+                    )
+                )
+                repository.insertAndUpdate(
+                    Pomodoro(
+                        task_name = "Read Newspaper",
+                        createdAt = LocalDateTime.now().minusDays(1),
+                        workTime = 2500
+                    )
+                )
+                repository.insertAndUpdate(
+                    Pomodoro(
+                        task_name = "Read Newspaper",
+                        createdAt = LocalDateTime.now().minusDays(2),
+                        workTime = 2500
+                    )
+                )
 
+            }
+        } catch (e: Exception) {
+            Log.d(Constants.TAG, "insertAndUpdatePomodoro: ${e.message}")
+        }
+    }
 }
