@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pomodoro\nApp</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="today">BUGÜN</string>
+    <string name="this_week">BU HAFTA</string>
+    <string name="this_year">BU YIL</string>
+    <string name="delete_fab">DeleteFAB</string>
+    <string name="start">BAŞLAT</string>
+    <string name="reset">SIFIRLA</string>
+    <string name="work">ÇALIŞ</string>
+    <string name="initial_value">00:00:00</string>
+    <string name="go_to_statistics">İstatistiklere Git</string>
+    <string name="break_string">ARA VER</string>
+    <string name="start_string">BAŞLAT</string>
+    <string name="work_string">ÇALIŞ</string>
+    <string name="stop_string">DUR</string>
+    <string name="resume_string">DEVAM ET</string>
+    <string name="statistics">İstatistik</string>
+    <string name="open">Aç</string>
+    <string name="close">Kapa</string>
+    <string name="home_string">Anasayfa</string>
+    <string name="this_month">BU AY</string>
+    <string name="write_task_name">Görev İsmini Girin</string>
+    <string name="how_to_use">Görev ismi girmezseniz zamanlayıcıyı başlatamazsınız. Pomodoro tekniği 20 dakika çalış, 5 dakika ara ver şeklinde olur. Bu döngüyü 4 kez tamamladığınızda bir pomodor olmuş olur ve istatistik ekranına bu değer işlenir.</string>
+</resources>

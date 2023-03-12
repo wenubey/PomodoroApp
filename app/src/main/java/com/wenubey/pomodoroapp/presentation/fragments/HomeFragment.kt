@@ -15,6 +15,8 @@ import com.wenubey.pomodoroapp.databinding.FragmentHomeBinding
 import com.wenubey.pomodoroapp.model.Pomodoro
 import com.wenubey.pomodoroapp.presentation.viewmodel.HomeViewModel
 import com.wenubey.pomodoroapp.utils.Constants
+import com.wenubey.pomodoroapp.utils.addMenuProvider
+import com.wenubey.pomodoroapp.utils.makeAlertDialog
 import com.wenubey.pomodoroapp.utils.makeToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -40,7 +42,15 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        addMenuProvider(R.menu.appbar_menu) {
+            when(it) {
+                R.id.action_how_to_use ->{
+                  makeAlertDialog(requireContext())
+                  true
+                }
+                else -> false
+            }
+        }
         pomodoroStartStopClickListener()
         addPomodoroToDb()
         pomodoroResetClickListener()

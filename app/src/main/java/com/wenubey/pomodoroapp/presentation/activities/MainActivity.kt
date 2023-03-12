@@ -1,11 +1,14 @@
 package com.wenubey.pomodoroapp.presentation.activities
 
 
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.navigation.NavController
@@ -21,6 +24,7 @@ import com.wenubey.pomodoroapp.databinding.ActivityMainBinding
 import com.wenubey.pomodoroapp.presentation.fragments.HomeFragmentDirections
 import com.wenubey.pomodoroapp.presentation.fragments.StatisticsFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -73,7 +77,6 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(toggle.onOptionsItemSelected(item)) {
             return true
@@ -81,22 +84,11 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-
-
     private fun setToolbar() {
         toggle = ActionBarDrawerToggle(this, binding.drawerLayout, R.string.open, R.string.close)
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-
-
-    override fun onSupportNavigateUp(): Boolean {
-        return NavigationUI.navigateUp(
-            findNavController(R.id.fragmentContainerViewNavHost),
-            binding.drawerLayout
-        )
     }
 
 }
